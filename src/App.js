@@ -32,6 +32,7 @@ const App = () => {
     ]
   },)
 
+
   const onSubmit = () => {
     console.log(data)
   }
@@ -76,6 +77,12 @@ const App = () => {
       }]
     }
     setShowCondition(true)
+    setData(list)
+  }
+
+  const handleChangeCollection = (value, index, name) => {
+    const list = {...data, conditions: [...data.conditions]}
+    list.conditions[index][name] = value;
     setData(list)
   }
 
@@ -148,20 +155,23 @@ const App = () => {
                 <Select
                   options={option}
                   name='product_tag'
+                  id='product_tag'
                   value={v.product_tag}
-                  onChange={value => setData({ ...data, conditions: [{ ...data.conditions[i], product_tag: value }] })}
+                  onChange={(value, id) => handleChangeCollection(value, i, id)}
                 />
                 <Select
                   options={option}
                   name='equal'
+                  id='equal'
                   value={v.equal}
-                  onChange={value => setData({ ...data, conditions: [{ ...data.conditions[i], equal: value }] })}
+                  onChange={(value, id) => handleChangeCollection(value, i, id)}
                 />
                 <TextField
                   type="number"
                   value={v.number}
                   autoComplete="off"
-                  onChange={value => setData({ ...data, conditions: [{ ...data.conditions[i], number: value }] })}
+                  id='number'
+                  onChange={(value, id) => handleChangeCollection(value, i, id)}
                 />
                 { }
                 <Button type='button' onClick={() => handleConditionRemove(i)}><Icon
