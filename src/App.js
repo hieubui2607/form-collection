@@ -171,9 +171,9 @@ const App = () => {
               </Columns>
             </div>
           ))}
-          <div style={{ paddingTop: '20px' }}>
+          {showCondition && <div style={{ paddingTop: '20px' }}>
             <Button type='button' onClick={handleConditionAdd} >Add another condition</Button>
-          </div>
+          </div>}
           <div style={{ paddingTop: '20px' }}>
             <Button type='submit' submit primary>Submit</Button>
           </div>
