@@ -10,17 +10,21 @@ import {
   Stack, Inline,
   Select,
   Columns,
-  Form
+  Form,
+  Icon
 } from '@shopify/polaris';
+import {
+  CircleCancelMajor
+} from '@shopify/polaris-icons';
 
 const App = () => {
+  const [showCondition, setShowCondition] = useState(true)
   const [data, setData] = useState({
     title: '',
     description: '',
     collection_type: 'manual',
     conditions: [
       {
-        conditions_product: 'all collections',
         product_tag: "1",
         equal: "1",
         number: 1
@@ -32,17 +36,48 @@ const App = () => {
     console.log(data)
   }
 
-  const optionProduct = [
+  const option = [
     { key: '0a', label: 'option1', value: "1" },
     { key: '1a', label: 'option2', value: "2" },
     { key: '2a', label: 'option3', value: "3" },
   ];
 
-  const optionEqual = [
-    { key: '0b', label: 'option1', value: "1" },
-    { key: '1b', label: 'option2', value: "2" },
-    { key: '2b', label: 'option3', value: "3" },
-  ];
+  const handleConditionAdd = () => {
+    setData({
+      ...data, conditions: [...data.conditions, {
+        product_tag: "1",
+        equal: "1",
+        number: 1
+      }]
+    })
+  }
+
+  const handleConditionRemove = (i) => {
+    const list = { ...data, conditions: [...data.conditions] }
+    if (data.conditions.length <= 1) {
+      return
+    }
+    list.conditions.splice(i, 1)
+    setData(list)
+  }
+
+  const handleAnyCondition = () => {
+    const list = { ...data, conditions: [] }
+    setShowCondition(false)
+    setData(list)
+  }
+
+  const handleAllCondition = () => {
+    const list = {
+      ...data, conditions: [{
+        product_tag: "1",
+        equal: "1",
+        number: 1
+      }]
+    }
+    setShowCondition(true)
+    setData(list)
+  }
 
   return (
     <Page
@@ -95,43 +130,52 @@ const App = () => {
               <Text>Product must match: </Text>
               <RadioButton
                 label="all conditions"
-                name="conditions_product"
-                checked={data.conditions[0].conditions_product === "all collections"}
-                onChange={value => value ?
-                  setData({ ...data, conditions: [{ ...data.conditions[0], conditions_product: "all collections" }] }) : null
-                }
+                name="conditions"
+                checked={showCondition}
+                onChange={handleAllCondition}
               />
               <RadioButton
                 label="any condition"
-                name="conditions_product"
-                checked={data?.conditions[0]?.conditions_product === "any collection"}
-                onChange={value => value ?
-                  setData({ ...data, conditions: [{ ...data.conditions[0], conditions_product: "any collection" }] }) : null}
+                name="condition"
+                checked={!showCondition}
+                onChange={handleAnyCondition}
               />
             </Inline>
           </Stack>
-          <Columns columns={{ xs: '1fr 1fr 1fr' }} gap='4'>
-            <Select
-              options={optionProduct}
-              name='product_tag'
-              value={data.conditions[0].product_tag}
-              onChange={value => setData({ ...data, conditions: [{ ...data.conditions[0], product_tag: value }] })}
-            />
-            <Select
-              options={optionEqual}
-              name='equal'
-              value={data.conditions[0].equal}
-              onChange={value => setData({ ...data, conditions: [{ ...data.conditions[0], equal: value }] })}
-            />
-            <TextField
-              type="number"
-              value={data.conditions[0].number}
-              autoComplete="off"
-              onChange={value => setData({ ...data, conditions: [{ ...data.conditions[0], number: Number(value) }] })}
-            />
-          </Columns>
+          {showCondition && data.conditions.map((v, i) => (
+            <div key={i} style={{ marginTop: '20px' }}>
+              <Columns columns={{ xs: '4fr 4fr 4fr 0.5fr' }} gap='4'>
+                <Select
+                  options={option}
+                  name='product_tag'
+                  value={v.product_tag}
+                  onChange={value => setData({ ...data, conditions: [{ ...data.conditions[i], product_tag: value }] })}
+                />
+                <Select
+                  options={option}
+                  name='equal'
+                  value={v.equal}
+                  onChange={value => setData({ ...data, conditions: [{ ...data.conditions[i], equal: value }] })}
+                />
+                <TextField
+                  type="number"
+                  value={v.number}
+                  autoComplete="off"
+                  onChange={value => setData({ ...data, conditions: [{ ...data.conditions[i], number: value }] })}
+                />
+                { }
+                <Button type='button' onClick={() => handleConditionRemove(i)}><Icon
+                  source={CircleCancelMajor}
+                  color="base"
+                /></Button>
+              </Columns>
+            </div>
+          ))}
           <div style={{ paddingTop: '20px' }}>
-            <Button submit type='submit'>Add another condition</Button>
+            <Button type='button' onClick={handleConditionAdd} >Add another condition</Button>
+          </div>
+          <div style={{ paddingTop: '20px' }}>
+            <Button type='submit' submit primary>Submit</Button>
           </div>
         </LegacyCard>
       </Form>
